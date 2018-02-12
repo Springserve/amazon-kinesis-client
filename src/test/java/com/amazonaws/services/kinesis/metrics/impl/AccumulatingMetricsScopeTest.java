@@ -14,12 +14,10 @@
  */
 package com.amazonaws.services.kinesis.metrics.impl;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
-import com.amazonaws.services.kinesis.metrics.impl.AccumulateByNameMetricsScope;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class AccumulatingMetricsScopeTest {
 
@@ -45,23 +43,26 @@ public class AccumulatingMetricsScopeTest {
         TestScope scope = new TestScope();
 
         scope.addData("name", 2.0, StandardUnit.Count);
-        scope.assertMetrics(TestHelper.constructDatum("name", StandardUnit.Count, 2.0, 2.0, 2.0, 1));
+        scope.addData("MillisBehindLatest", 5.0, StandardUnit.Count);
+        scope.assertMetrics(TestHelper.constructDatum("MillisBehindLatest", StandardUnit.Count,5.0, 5.0, 5.0, 1));
     }
 
     @Test
     public void testAccumulate() {
         TestScope scope = new TestScope();
 
-        scope.addData("name", 2.0, StandardUnit.Count);
-        scope.addData("name", 3.0, StandardUnit.Count);
-        scope.assertMetrics(TestHelper.constructDatum("name", StandardUnit.Count, 3.0, 2.0, 5.0, 2));
+        scope.addData("name", 4.0, StandardUnit.Count);
+        scope.addData("name", 8.0, StandardUnit.Count);
+        scope.addData("MillisBehindLatest", 2.0, StandardUnit.Count);
+        scope.addData("MillisBehindLatest", 3.0, StandardUnit.Count);
+        scope.assertMetrics(TestHelper.constructDatum("MillisBehindLatest", StandardUnit.Count, 3.0, 2.0, 5.0, 2));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testAccumulateWrongUnit() {
         TestScope scope = new TestScope();
 
-        scope.addData("name", 2.0, StandardUnit.Count);
-        scope.addData("name", 3.0, StandardUnit.Megabits);
+        scope.addData("millisbehind", 2.0, StandardUnit.Count);
+        scope.addData("millisbehind", 3.0, StandardUnit.Megabits);
     }
 }

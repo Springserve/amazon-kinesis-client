@@ -14,11 +14,11 @@
  */
 package com.amazonaws.services.kinesis.metrics.impl;
 
-import java.util.Set;
-
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.amazonaws.services.kinesis.metrics.interfaces.MetricsLevel;
 import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
 
 /**
  * An {@code IMetricsScope} that filters {@link #addData} calls based on the provided metrics level. If the provided
@@ -69,7 +69,9 @@ public class FilteringMetricsScope extends AccumulateByNameMetricsScope {
      */
     @Override
     public void addData(String name, double value, StandardUnit unit) {
-        addData(name, value, unit, MetricsLevel.DETAILED);
+        if (name != null && name.toLowerCase().contains("mil")) {
+            addData(name, value, unit, MetricsLevel.DETAILED);
+        }
     }
 
     /**
@@ -86,7 +88,9 @@ public class FilteringMetricsScope extends AccumulateByNameMetricsScope {
             // Drop the data.
             return;
         }
-        super.addData(name, value, unit);
+        if (name != null && name.toLowerCase().contains("mil")) {
+            super.addData(name, value, unit);
+        }
     }
 
     /**

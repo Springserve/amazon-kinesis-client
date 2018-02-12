@@ -14,13 +14,13 @@
  */
 package com.amazonaws.services.kinesis.metrics.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.amazonaws.services.cloudwatch.model.StatisticSet;
 import com.amazonaws.services.kinesis.metrics.interfaces.MetricsLevel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An IMetricsScope that accumulates data from multiple calls to addData with
@@ -46,12 +46,16 @@ public abstract class AccumulatingMetricsScope<KeyType> extends EndingMetricsSco
 
     @Override
     public void addData(String name, double value, StandardUnit unit) {
-        addData(getKey(name), name, value, unit);
+        if (name != null && name.toLowerCase().contains("mil")) {
+            addData(getKey(name), name, value, unit);
+        }
     }
 
     @Override
     public void addData(String name, double value, StandardUnit unit, MetricsLevel level) {
-        addData(getKey(name), name, value, unit);
+        if (name != null && name.toLowerCase().contains("mil")) {
+            addData(getKey(name), name, value, unit);
+        }
     }
 
     /**

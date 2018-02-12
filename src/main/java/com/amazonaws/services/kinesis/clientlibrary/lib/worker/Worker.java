@@ -738,7 +738,7 @@ public class Worker implements Runnable {
         };
     }
 
-    boolean isShutdownComplete() {
+    public boolean isShutdownComplete() {
         return shutdownComplete;
     }
 

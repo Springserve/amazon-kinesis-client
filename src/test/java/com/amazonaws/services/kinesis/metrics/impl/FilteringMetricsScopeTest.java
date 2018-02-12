@@ -14,17 +14,16 @@
  */
 package com.amazonaws.services.kinesis.metrics.impl;
 
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.amazonaws.services.kinesis.metrics.interfaces.IMetricsScope;
 import com.amazonaws.services.kinesis.metrics.interfaces.MetricsLevel;
 import com.google.common.collect.ImmutableSet;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Set;
 
 public class FilteringMetricsScopeTest {
 
@@ -60,12 +59,14 @@ public class FilteringMetricsScopeTest {
         TestScope scope = new TestScope();
         scope.addData("detailedDataName", 2.0, StandardUnit.Count, MetricsLevel.DETAILED);
         scope.addData("noLevelDataName", 3.0, StandardUnit.Milliseconds);
+        scope.addData("MillisBehindLatest", 2.0, StandardUnit.Count, MetricsLevel.DETAILED);
+        scope.addData("MillisBehindLatest2", 3.0, StandardUnit.Milliseconds);
         scope.addDimension("dimensionName", "dimensionValue");
 
         // By default all metrics and dimensions should be allowed.
         scope.assertMetrics(
-                TestHelper.constructDatum("detailedDataName", StandardUnit.Count, 2.0, 2.0, 2.0, 1),
-                TestHelper.constructDatum("noLevelDataName", StandardUnit.Milliseconds, 3.0, 3.0, 3.0, 1.0));
+                TestHelper.constructDatum("MillisBehindLatest", StandardUnit.Count, 2.0, 2.0, 2.0, 1),
+                TestHelper.constructDatum("MillisBehindLatest2", StandardUnit.Milliseconds, 3.0, 3.0, 3.0, 1.0));
         scope.assertDimensions(TestHelper.constructDimension("dimensionName", "dimensionValue"));
     }
 
@@ -74,10 +75,12 @@ public class FilteringMetricsScopeTest {
         TestScope scope = new TestScope(MetricsLevel.SUMMARY, null);
         scope.addData("summaryDataName", 2.0, StandardUnit.Count, MetricsLevel.SUMMARY);
         scope.addData("summaryDataName", 10.0, StandardUnit.Count, MetricsLevel.SUMMARY);
+        scope.addData("MillisBehindLatest", 2.0, StandardUnit.Count, MetricsLevel.SUMMARY);
+        scope.addData("MillisBehindLatest", 10.0, StandardUnit.Count, MetricsLevel.SUMMARY);
         scope.addData("detailedDataName", 4.0, StandardUnit.Bytes, MetricsLevel.DETAILED);
         scope.addData("noLevelDataName", 3.0, StandardUnit.Milliseconds);
 
-        scope.assertMetrics(TestHelper.constructDatum("summaryDataName", StandardUnit.Count, 10.0, 2.0, 12.0, 2.0));
+        scope.assertMetrics(TestHelper.constructDatum("MillisBehindLatest", StandardUnit.Count, 10.0, 2.0, 12.0, 2.0));
     }
 
     @Test
